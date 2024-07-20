@@ -1,0 +1,15 @@
+@font-face {
+    font-family: 'web-font';
+    src: url(/fonts/web-font.eot);
+    src: url(/fonts/web-font.eot?#iefix) format('embedded-opentype'),
+        url(/fonts/web-font.svg#cdata-font) format('svg'),
+        url(/fonts/web-font.ttf) format('truetype'),
+        url(/fonts/web-font.woff) format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: 'Trebuchet MS', sans-serif;
+    background-color: #e5e5e8;
+}
