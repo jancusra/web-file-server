@@ -27,7 +27,7 @@ body {
     content: "\e001";
 }
 
-.i-config:before {
+.i-configuration:before {
     content: "\e002";
 }
 
@@ -35,14 +35,14 @@ body {
     content: "\e003";
 }
 
-.i-imprint:before {
+.i-fingerprint:before {
     content: "\e004";
 }
 
-.i-death:before {
+.i-poison:before {
     content: "\e005";
 }
 
-.i-judge:before {
+.i-presenter:before {
     content: "\e006";
 }
