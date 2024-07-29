@@ -3,13 +3,13 @@ use std::{
     net::{TcpListener, TcpStream}
 };
 
-use crate::server::{request_parser, response};
+use crate::server::{configuration::ServerConfig, request_parser, response};
 
 pub struct Server { }
 
 impl Server {
     pub async fn run(address_port: &str) {
-        //let server_cfg = ServerConfig::init();
+        let server_cfg = ServerConfig::init();
 
         match TcpListener::bind(address_port) {
             Ok(listener) => {
@@ -17,7 +17,7 @@ impl Server {
 
                 for stream in listener.incoming() {
                     match stream {
-                        Ok(stream) => Self::handle_request(stream/*, &server_cfg*/).await,
+                        Ok(stream) => Self::handle_request(stream, &server_cfg).await,
                         Err(_) => {}
                     }
                 }
@@ -26,11 +26,14 @@ impl Server {
         }
     }
 
-    async fn handle_request(mut stream: TcpStream/*, config: &ServerConfig*/) {
+    async fn handle_request(mut stream: TcpStream, config: &ServerConfig) {
         let mut buffer_reader = BufReader::new(&mut stream);
-        let _request_header = request_parser::parse_header(&mut buffer_reader);
+        let request_header = request_parser::parse_header(&mut buffer_reader);
 
-        response::serve_file(&stream, &format!("{}{}", env!("CARGO_MANIFEST_DIR"), "\\src\\www\\index.html"), 
-            &"text/html; charset=UTF-8", false);
+        if let (Some(file_path), Some(file_entry)) = config.get_file_data(&request_header) {
+            response::serve_file(&stream, &file_path, &file_entry.content_type, file_entry.cache);
+        }
+
+        response::serve_file(&stream, &config.default_file, &config.default_content_type, false);
     }
 }

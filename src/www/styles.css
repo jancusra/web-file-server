@@ -1,10 +1,10 @@
 @font-face {
     font-family: 'web-font';
-    src: url(/fonts/web-font.eot);
-    src: url(/fonts/web-font.eot?#iefix) format('embedded-opentype'),
-        url(/fonts/web-font.svg#web-font) format('svg'),
-        url(/fonts/web-font.ttf) format('truetype'),
-        url(/fonts/web-font.woff) format('woff');
+    src: url(/fonts/web-font.eot?v=001);
+    src: url(/fonts/web-font.eot?#iefix&v=001) format('embedded-opentype'),
+        url(/fonts/web-font.svg#web-font?v=001) format('svg'),
+        url(/fonts/web-font.ttf?v=001) format('truetype'),
+        url(/fonts/web-font.woff?v=001) format('woff');
     font-weight: normal;
     font-style: normal;
 }
@@ -12,4 +12,37 @@
 body {
     font-family: 'Trebuchet MS', sans-serif;
     background-color: #e5e5e8;
+}
+
+/* custom font icons */
+.icon {
+    display: inline-block;
+    font-family: "web-font";
+    font-size: 48px;
+    font-weight: 400;
+    line-height: 1;
+}
+
+.i-bus:before {
+    content: "\e001";
+}
+
+.i-config:before {
+    content: "\e002";
+}
+
+.i-earth:before {
+    content: "\e003";
+}
+
+.i-imprint:before {
+    content: "\e004";
+}
+
+.i-death:before {
+    content: "\e005";
+}
+
+.i-judge:before {
+    content: "\e006";
 }
