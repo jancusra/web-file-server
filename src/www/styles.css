@@ -11,38 +11,60 @@
 
 body {
     font-family: 'Trebuchet MS', sans-serif;
-    background-color: #e5e5e8;
+    background-color: #e6e6e6;
+    text-align: center;
+}
+
+h1,
+.dark-color {
+    color: #333300 !important;
+}
+
+.title-icons-gap {
+    height: 100px;
+}
+
+.animate-icon {
+    transition: 10s;
 }
 
 /* custom font icons */
 .icon {
     display: inline-block;
     font-family: "web-font";
-    font-size: 48px;
+    font-size: 96px;
     font-weight: 400;
     line-height: 1;
+    margin: 0 30px;
+    color: #cc0066;
 }
 
 .i-bus:before {
     content: "\e001";
+    cursor: pointer;
 }
 
 .i-configuration:before {
     content: "\e002";
+    color: #6666ff;
 }
 
 .i-earth:before {
     content: "\e003";
+    color: #009999;
 }
 
 .i-fingerprint:before {
     content: "\e004";
+    color: #cc7a00;
 }
 
 .i-poison:before {
     content: "\e005";
+    color: #ff5050;
 }
 
 .i-presenter:before {
     content: "\e006";
+    color: #663300;
 }
