@@ -1,8 +1,11 @@
+//! Request parser: methods to parse received string request
+
 use std::{
     io::{prelude::*, BufReader},
     net::TcpStream
 };
 
+/// Returns the first line of the GET request header
 pub fn parse_header(buf_reader: &mut BufReader<&mut TcpStream>) -> String
 {
     let mut head_str = String::new();

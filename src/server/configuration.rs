@@ -1,5 +1,8 @@
+//! Server configuration: available files to serving, defined MIME types and some related methods
+
 use std::{ffi::OsStr, path::Path};
 
+/// Define MIME type entry
 #[derive(Debug, Clone)]
 pub struct FileEntry {
     pub extension: String,
@@ -7,6 +10,7 @@ pub struct FileEntry {
     pub cache: bool
 }
 
+/// Server configuration
 pub struct ServerConfig {
     pub web_path: String,
     pub default_file: String,
@@ -17,12 +21,15 @@ pub struct ServerConfig {
 
 impl ServerConfig {
     pub fn init() -> Self {
+        // Web folder location
         let mut web_path = format!("{}{}", env!("CARGO_MANIFEST_DIR"), "\\src\\www");
         web_path = web_path.replace("\\", "/");
 
+        // Default return file
         let default_file = format!("{}{}", web_path, "/index.html".to_string());
         let html_content_type = "text/html; charset=UTF-8".to_string();
 
+        // Publicly available server files
         let files_to_serve = vec![
             "/favicon.ico".to_string(),
             "/styles.css".to_string(),
@@ -33,6 +40,7 @@ impl ServerConfig {
             "/fonts/web-font.woff".to_string()
         ];
 
+        // The list of all MIME types
         let mut file_data: Vec<FileEntry> = vec![];
 
         file_data.push(FileEntry {
@@ -92,6 +100,7 @@ impl ServerConfig {
         }
     }
 
+    // Get the file location and MIME type entry according to the first line of the request header
     pub fn get_file_data(&self, header: &str) -> (Option<String>, Option<FileEntry>) {
         for file in &self.files_to_serve {
             if header.starts_with(&format!("GET {}", file)) {
@@ -105,6 +114,7 @@ impl ServerConfig {
         (None, None)
     }
 
+    // Get extension by full file name
     fn get_extension_from_filename(filename: &str) -> Option<&str> {
         Path::new(filename)
             .extension()

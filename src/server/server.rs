@@ -1,3 +1,5 @@
+//! Server: define basic methods to start the server and process requests
+
 use std::{
     io::BufReader,
     net::{TcpListener, TcpStream}
@@ -5,9 +7,11 @@ use std::{
 
 use crate::server::{configuration::ServerConfig, request_parser, response};
 
+/// Main server instance
 pub struct Server { }
 
 impl Server {
+    // Starting a server instance
     pub async fn run(address_port: &str) {
         let server_cfg = ServerConfig::init();
 
@@ -26,6 +30,7 @@ impl Server {
         }
     }
 
+    // Processing a specific request as a stream
     async fn handle_request(mut stream: TcpStream, config: &ServerConfig) {
         let mut buffer_reader = BufReader::new(&mut stream);
         let request_header = request_parser::parse_header(&mut buffer_reader);
