@@ -1,10 +1,20 @@
+/* "Bulletproof" @font-face: supports browsers from ~2010 onward.
+   Order matters — a browser picks the first format it understands, so the
+   smallest modern format (woff) comes before the legacy fallbacks. */
 @font-face {
     font-family: 'web-font';
-    src: url(/fonts/web-font.eot?v=001);
-    src: url(/fonts/web-font.eot?#iefix&v=001) format('embedded-opentype'),
-        url(/fonts/web-font.svg#web-font?v=001) format('svg'),
-        url(/fonts/web-font.ttf?v=001) format('truetype'),
-        url(/fonts/web-font.woff?v=001) format('woff');
+    src: url('/fonts/web-font.eot?v=002');
+    /* IE9 in compatibility mode */
+    src: url('/fonts/web-font.eot?#iefix&v=002') format('embedded-opentype'),
+        /* IE6-8 */
+        url('/fonts/web-font.woff2?v=002') format('woff2'),
+        /* modern browsers (smallest, ~2014+) */
+        url('/fonts/web-font.woff?v=002') format('woff'),
+        /* modern browsers, IE9+ */
+        url('/fonts/web-font.ttf?v=002') format('truetype'),
+        /* old Android, older Safari */
+        url('/fonts/web-font.svg#web-font?v=002') format('svg');
+    /* legacy iOS Safari (2010) */
     font-weight: normal;
     font-style: normal;
 }

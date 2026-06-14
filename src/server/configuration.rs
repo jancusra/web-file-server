@@ -36,6 +36,7 @@ impl ServerConfig {
             ("svg", ("image/svg+xml", true)),
             ("ttf", ("font/ttf", true)),
             ("woff", ("font/woff", true)),
+            ("woff2", ("font/woff2", true)),
         ]);
 
         // Publicly available files (the whitelist). The content type and cache
@@ -48,6 +49,7 @@ impl ServerConfig {
             "/fonts/web-font.svg",
             "/fonts/web-font.ttf",
             "/fonts/web-font.woff",
+            "/fonts/web-font.woff2",
         ];
 
         // Join the whitelist with the MIME table once at startup. A path whose
