@@ -62,3 +62,24 @@ pub async fn get_file_as_byte_vec(filename: &str) -> Result<Vec<u8>> {
 
     Ok(buffer)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn header_has_status_type_and_length() {
+        let header = get_response_header("text/css", 42, true);
+
+        assert!(header.starts_with("HTTP/1.1 200 OK\r\n"));
+        assert!(header.contains("Content-Type: text/css\r\n"));
+        assert!(header.contains("Content-Length: 42\r\n"));
+        assert!(header.ends_with("\r\n\r\n"));
+    }
+
+    #[test]
+    fn cache_control_present_only_when_not_cached() {
+        assert!(get_response_header("text/css", 1, false).contains("Cache-Control: no-store\r\n"));
+        assert!(!get_response_header("font/woff", 1, true).contains("Cache-Control"));
+    }
+}

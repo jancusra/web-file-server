@@ -6,13 +6,20 @@ use tokio::net::{TcpListener, TcpStream};
 use crate::server::{configuration::ServerConfig, request_parser, response};
 
 /// Main server instance
-pub struct Server {}
+pub struct Server {
+    config: Arc<ServerConfig>,
+}
 
 impl Server {
-    // Starting a server instance
-    pub async fn run(address_port: &str) {
-        let server_cfg = Arc::new(ServerConfig::init());
+    // Create a new server instance with the default configuration
+    pub fn new() -> Self {
+        Self {
+            config: Arc::new(ServerConfig::init()),
+        }
+    }
 
+    // Starting a server instance
+    pub async fn run(&self, address_port: &str) {
         let listener = match TcpListener::bind(address_port).await {
             Ok(listener) => listener,
             Err(error) => {
@@ -28,7 +35,7 @@ impl Server {
                 Ok((stream, _addr)) => {
                     // Handle each connection concurrently so a slow client
                     // can't block the others.
-                    let config = Arc::clone(&server_cfg);
+                    let config = Arc::clone(&self.config);
                     tokio::spawn(async move {
                         Self::handle_request(stream, config).await;
                     });
@@ -45,28 +52,33 @@ impl Server {
             None => return,
         };
 
-        let result =
-            if let (Some(file_path), Some(file_entry)) = config.get_file_data(&request_header) {
-                response::serve_file(
-                    &mut stream,
-                    &file_path,
-                    &file_entry.content_type,
-                    file_entry.cache,
-                )
-                .await
-            } else {
-                response::serve_file(
-                    &mut stream,
-                    &config.default_file,
-                    &config.default_content_type,
-                    false,
-                )
-                .await
-            };
+        let result = if let Some(served) = config.get_file_data(&request_header) {
+            response::serve_file(
+                &mut stream,
+                &served.fs_path,
+                &served.content_type,
+                served.cache,
+            )
+            .await
+        } else {
+            response::serve_file(
+                &mut stream,
+                &config.default_file,
+                &config.default_content_type,
+                false,
+            )
+            .await
+        };
 
         if let Err(error) = result {
             eprintln!("Error serving request: {error}");
             response::serve_not_found(&mut stream).await;
         }
+    }
+}
+
+impl Default for Server {
+    fn default() -> Self {
+        Self::new()
     }
 }
