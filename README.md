@@ -4,7 +4,8 @@ The basic server is focused to return all required files to display the main web
 The code structure is focused on the functionality of a tiny server, it is definitely not final and usable for larger web applications.
 
 It is built on an async [tokio](https://tokio.rs/) runtime, serves a fixed whitelist of
-static files (so arbitrary paths can't be read), and handles each connection concurrently.
+static files (so arbitrary paths can't be read), and handles connections concurrently up
+to a fixed limit so a flood of clients can't spawn unbounded work.
 
 ### How to run the server
 
@@ -15,6 +16,7 @@ cargo run
 ```
 
 By default the server listens on `http://127.0.0.1:15400` — open that address in your browser.
+Press `Ctrl-C` to stop the server; it stops accepting new connections and shuts down cleanly.
 
 ### Configuration
 

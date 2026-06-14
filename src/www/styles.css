@@ -1,6 +1,6 @@
 /* "Bulletproof" @font-face: supports browsers from ~2010 onward.
    Order matters — a browser picks the first format it understands, so the
-   smallest modern format (woff) comes before the legacy fallbacks. */
+   smallest modern format (woff2) comes before the legacy fallbacks. */
 @font-face {
     font-family: 'web-font';
     src: url('/fonts/web-font.eot?v=002');

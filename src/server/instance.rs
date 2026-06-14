@@ -2,8 +2,13 @@
 
 use std::sync::Arc;
 use tokio::net::{TcpListener, TcpStream};
+use tokio::sync::Semaphore;
 
 use crate::server::{configuration::ServerConfig, request_parser, response};
+
+/// Upper bound on connections handled at once. Past this, new connections wait
+/// in the OS accept backlog instead of spawning unbounded tasks.
+const MAX_CONNECTIONS: usize = 1024;
 
 /// Main server instance
 pub struct Server {
@@ -30,21 +35,39 @@ impl Server {
 
         println!("Server is running on http://{}", address_port);
 
-        self.serve(listener).await;
+        // Serve until interrupted (Ctrl-C), then stop accepting new connections
+        // and return so the process can exit cleanly.
+        tokio::select! {
+            _ = self.serve(listener) => {}
+            _ = tokio::signal::ctrl_c() => println!("\nShutting down"),
+        }
     }
 
     /// Accept connections on an already-bound listener, handling each one
-    /// concurrently so a slow client can't block the others.
+    /// concurrently so a slow client can't block the others. The number of
+    /// in-flight connections is capped by [`MAX_CONNECTIONS`].
     ///
     /// Split out from [`Server::run`] so tests can bind to an ephemeral port
     /// (`127.0.0.1:0`) and drive a real connection against the server.
     pub async fn serve(&self, listener: TcpListener) {
+        let limit = Arc::new(Semaphore::new(MAX_CONNECTIONS));
+
         loop {
+            // Reserve a slot before accepting, so we never spawn more than
+            // MAX_CONNECTIONS handler tasks at once.
+            let permit = match Arc::clone(&limit).acquire_owned().await {
+                Ok(permit) => permit,
+                // The semaphore is never closed, so this is unreachable.
+                Err(_) => return,
+            };
+
             match listener.accept().await {
                 Ok((stream, _addr)) => {
                     let config = Arc::clone(&self.config);
                     tokio::spawn(async move {
                         Self::handle_request(stream, config).await;
+                        // Release the slot once the connection is done.
+                        drop(permit);
                     });
                 }
                 Err(error) => eprintln!("Failed to accept connection: {error}"),

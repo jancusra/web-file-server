@@ -30,7 +30,11 @@ pub async fn write_response(
     Ok(())
 }
 
-/// Write a minimal 404 response to the stream (errors are logged, not propagated)
+/// Write a minimal 404 response to the stream (errors are logged, not propagated).
+///
+/// This is a safety net rather than a path an arbitrary client can hit: requests
+/// are routed against an in-memory whitelist, so this only fires when a
+/// whitelisted file is missing or unreadable on disk at request time.
 pub async fn serve_not_found(stream: &mut TcpStream) {
     let body = b"404 Not Found";
     let header = format!(
