@@ -1,7 +1,6 @@
 use std::error::Error;
-use tokio;
 
-use web_server::server::server::Server;
+use web_server::server::instance::Server;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {

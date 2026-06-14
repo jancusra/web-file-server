@@ -26,7 +26,7 @@ impl ServerConfig {
         web_path = web_path.replace("\\", "/");
 
         // Default return file
-        let default_file = format!("{}{}", web_path, "/index.html".to_string());
+        let default_file = format!("{}{}", web_path, "/index.html");
         let html_content_type = "text/html; charset=UTF-8".to_string();
 
         // Publicly available server files
@@ -40,61 +40,29 @@ impl ServerConfig {
             "/fonts/web-font.woff".to_string(),
         ];
 
-        // The list of all MIME types
-        let mut file_data: Vec<FileEntry> = vec![];
-
-        file_data.push(FileEntry {
-            extension: "html".to_string(),
-            content_type: html_content_type.clone(),
-            cache: false,
-        });
-
-        file_data.push(FileEntry {
-            extension: "ico".to_string(),
-            content_type: "image/vnd.microsoft.icon".to_string(),
-            cache: true,
-        });
-
-        file_data.push(FileEntry {
-            extension: "css".to_string(),
-            content_type: "text/css".to_string(),
-            cache: false,
-        });
-
-        file_data.push(FileEntry {
-            extension: "js".to_string(),
-            content_type: "text/javascript".to_string(),
-            cache: false,
-        });
-
-        file_data.push(FileEntry {
-            extension: "eot".to_string(),
-            content_type: "application/vnd.ms-fontobject".to_string(),
-            cache: true,
-        });
-
-        file_data.push(FileEntry {
-            extension: "svg".to_string(),
-            content_type: "image/svg+xml".to_string(),
-            cache: true,
-        });
-
-        file_data.push(FileEntry {
-            extension: "ttf".to_string(),
-            content_type: "font/ttf".to_string(),
-            cache: true,
-        });
-
-        file_data.push(FileEntry {
-            extension: "woff".to_string(),
-            content_type: "font/woff".to_string(),
-            cache: true,
-        });
+        // The list of all MIME types: (extension, content type, cache)
+        let file_data: Vec<FileEntry> = [
+            ("html", html_content_type.as_str(), false),
+            ("ico", "image/vnd.microsoft.icon", true),
+            ("css", "text/css", false),
+            ("js", "text/javascript", false),
+            ("eot", "application/vnd.ms-fontobject", true),
+            ("svg", "image/svg+xml", true),
+            ("ttf", "font/ttf", true),
+            ("woff", "font/woff", true),
+        ]
+        .into_iter()
+        .map(|(extension, content_type, cache)| FileEntry {
+            extension: extension.to_string(),
+            content_type: content_type.to_string(),
+            cache,
+        })
+        .collect();
 
         Self {
             web_path,
             default_file,
-            default_content_type: html_content_type.clone(),
+            default_content_type: html_content_type,
             files_to_serve,
             file_data,
         }
