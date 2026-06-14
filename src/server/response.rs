@@ -1,22 +1,46 @@
 //! Response: methods for formatting and returning the response
 
-use std::{
+use std::io::Result;
+
+use tokio::{
     fs::File,
-    io::{prelude::*, BufReader},
-    net::TcpStream
+    io::{AsyncReadExt, AsyncWriteExt},
+    net::TcpStream,
 };
 
 /// Create a response file with a header and write the result to the stream
-pub fn serve_file(mut stream: &TcpStream, file_path: &str, content_type: &str, cache: bool) {
-    let content = get_file_as_byte_vec(file_path);
+pub async fn serve_file(
+    stream: &mut TcpStream,
+    file_path: &str,
+    content_type: &str,
+    cache: bool,
+) -> Result<()> {
+    let content = get_file_as_byte_vec(file_path).await?;
     let header = get_response_header(content_type, content.len(), cache);
-    let mut header_bytes = header.into_bytes();
 
-    for byte in content {
-        header_bytes.push(byte);
+    let mut response = header.into_bytes();
+    response.extend(content);
+
+    stream.write_all(&response).await?;
+    stream.flush().await?;
+
+    Ok(())
+}
+
+/// Write a minimal 404 response to the stream (errors are logged, not propagated)
+pub async fn serve_not_found(stream: &mut TcpStream) {
+    let body = b"404 Not Found";
+    let header = format!(
+        "HTTP/1.1 404 Not Found\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Length: {}\r\n\r\n",
+        body.len()
+    );
+
+    let mut response = header.into_bytes();
+    response.extend_from_slice(body);
+
+    if let Err(error) = stream.write_all(&response).await {
+        eprintln!("Failed to write 404 response: {error}");
     }
-
-    stream.write_all(header_bytes.as_slice()).ok();
 }
 
 /// Prepare a response header with OK status
@@ -31,16 +55,10 @@ pub fn get_response_header(content_type: &str, content_length: usize, cache: boo
 }
 
 /// Convert a specific file to a vector of bytes
-pub fn get_file_as_byte_vec(filename: &str) -> Vec<u8> {
+pub async fn get_file_as_byte_vec(filename: &str) -> Result<Vec<u8>> {
+    let mut file = File::open(filename).await?;
     let mut buffer = Vec::new();
+    file.read_to_end(&mut buffer).await?;
 
-    match File::open(filename) {
-        Ok(file) => {
-            let mut reader = BufReader::new(file);
-            reader.read_to_end(&mut buffer).ok();
-        },
-        Err(_) => {}
-    }
-
-    buffer
+    Ok(buffer)
 }

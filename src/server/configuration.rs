@@ -7,7 +7,7 @@ use std::{ffi::OsStr, path::Path};
 pub struct FileEntry {
     pub extension: String,
     pub content_type: String,
-    pub cache: bool
+    pub cache: bool,
 }
 
 /// Server configuration
@@ -16,7 +16,7 @@ pub struct ServerConfig {
     pub default_file: String,
     pub default_content_type: String,
     pub files_to_serve: Vec<String>,
-    pub file_data: Vec<FileEntry>
+    pub file_data: Vec<FileEntry>,
 }
 
 impl ServerConfig {
@@ -37,7 +37,7 @@ impl ServerConfig {
             "/fonts/web-font.eot".to_string(),
             "/fonts/web-font.svg".to_string(),
             "/fonts/web-font.ttf".to_string(),
-            "/fonts/web-font.woff".to_string()
+            "/fonts/web-font.woff".to_string(),
         ];
 
         // The list of all MIME types
@@ -46,49 +46,49 @@ impl ServerConfig {
         file_data.push(FileEntry {
             extension: "html".to_string(),
             content_type: html_content_type.clone(),
-            cache: false
+            cache: false,
         });
 
         file_data.push(FileEntry {
             extension: "ico".to_string(),
             content_type: "image/vnd.microsoft.icon".to_string(),
-            cache: true
+            cache: true,
         });
 
         file_data.push(FileEntry {
             extension: "css".to_string(),
             content_type: "text/css".to_string(),
-            cache: false
+            cache: false,
         });
 
         file_data.push(FileEntry {
             extension: "js".to_string(),
             content_type: "text/javascript".to_string(),
-            cache: false
+            cache: false,
         });
 
         file_data.push(FileEntry {
             extension: "eot".to_string(),
             content_type: "application/vnd.ms-fontobject".to_string(),
-            cache: true
+            cache: true,
         });
 
         file_data.push(FileEntry {
             extension: "svg".to_string(),
             content_type: "image/svg+xml".to_string(),
-            cache: true
+            cache: true,
         });
 
         file_data.push(FileEntry {
             extension: "ttf".to_string(),
             content_type: "font/ttf".to_string(),
-            cache: true
+            cache: true,
         });
 
         file_data.push(FileEntry {
             extension: "woff".to_string(),
             content_type: "font/woff".to_string(),
-            cache: true
+            cache: true,
         });
 
         Self {
@@ -96,7 +96,7 @@ impl ServerConfig {
             default_file,
             default_content_type: html_content_type.clone(),
             files_to_serve,
-            file_data
+            file_data,
         }
     }
 
@@ -105,8 +105,16 @@ impl ServerConfig {
         for file in &self.files_to_serve {
             if header.starts_with(&format!("GET {}", file)) {
                 if let Some(extension) = Self::get_extension_from_filename(file) {
-                    let filter_data: Vec<FileEntry> = self.file_data.iter().filter(|&fe| fe.extension == extension).cloned().collect();
-                    return (Some(format!("{}{}", self.web_path, file)), filter_data.first().cloned())
+                    let filter_data: Vec<FileEntry> = self
+                        .file_data
+                        .iter()
+                        .filter(|&fe| fe.extension == extension)
+                        .cloned()
+                        .collect();
+                    return (
+                        Some(format!("{}{}", self.web_path, file)),
+                        filter_data.first().cloned(),
+                    );
                 }
             }
         }
@@ -116,8 +124,6 @@ impl ServerConfig {
 
     // Get extension by full file name
     fn get_extension_from_filename(filename: &str) -> Option<&str> {
-        Path::new(filename)
-            .extension()
-            .and_then(OsStr::to_str)
+        Path::new(filename).extension().and_then(OsStr::to_str)
     }
 }
