@@ -13,8 +13,8 @@ pub struct Server {
 }
 
 impl Server {
-    // Create a new server instance bound to the given address, with otherwise
-    // default configuration.
+    /// Create a new server instance bound to the given address, with otherwise
+    /// default configuration.
     pub fn new(address: String) -> Self {
         Self::new_with_config(ServerConfig::new(address))
     }
@@ -27,14 +27,14 @@ impl Server {
         }
     }
 
-    // Bind to the configured address and start serving requests.
-    //
-    // Takes `self` by value so the returned future is `'static` and each server
-    // can be driven on its own task (e.g. `tokio::spawn(server.run())`) when
-    // running several instances side by side.
-    //
-    // Returns the bind error so the caller can exit with a non-zero status when
-    // the server fails to start.
+    /// Bind to the configured address and start serving requests.
+    ///
+    /// Takes `self` by value so the returned future is `'static` and each server
+    /// can be driven on its own task (e.g. `tokio::spawn(server.run())`) when
+    /// running several instances side by side.
+    ///
+    /// Returns the bind error so the caller can exit with a non-zero status when
+    /// the server fails to start.
     pub async fn run(self) -> Result<()> {
         let address = &self.config.address;
 
@@ -87,7 +87,7 @@ impl Server {
         }
     }
 
-    // Processing a specific request as a stream
+    /// Processing a specific request as a stream
     async fn handle_request(mut stream: TcpStream, config: Arc<ServerConfig>) {
         let request_header =
             match request_parser::parse_header(&mut stream, config.header_timeout).await {

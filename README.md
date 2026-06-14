@@ -1,5 +1,7 @@
 # Basic server serving web files in Rust
 
+[![all tests](https://github.com/jancusra/web-file-server/actions/workflows/rust.yml/badge.svg)](https://github.com/jancusra/web-file-server/actions/workflows/rust.yml)
+
 The basic server is focused to return all required files to display the main web page.
 The code structure is focused on the functionality of a tiny server, it is definitely not final and usable for larger web applications.
 

@@ -1,4 +1,4 @@
-//! Server configuration: available files to serving, defined MIME types and some related methods
+//! Server configuration: the files available for serving, their MIME types, and some related methods
 
 use std::{collections::HashMap, ffi::OsStr, path::Path, time::Duration};
 
@@ -24,7 +24,7 @@ pub struct ServerConfig {
     /// Directory the served files are read from. Defaults to the bundled
     /// `src/www`; change it to serve different content (e.g. per instance).
     pub web_path: String,
-    /// Path, relative to [`web_path`], of the default response (the index page)
+    /// Path, relative to [`ServerConfig::web_path`], of the default response (the index page)
     /// served when no whitelisted file matches the request
     pub default_file: String,
     /// Content type sent with the default response

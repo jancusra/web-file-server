@@ -9,11 +9,11 @@ use tokio::{
 };
 
 /// Returns the request line of the GET request, or `None` if the connection
-/// closed, timed out, or sent no valid request line. `header_timeout` bounds how
-/// long we wait for the client at each read.
+/// closed, timed out, or sent no valid request line. `header_timeout` bounds the
+/// wait for the request line, and again the wait for the rest of the headers.
 ///
 /// Only the request line is needed to route a static file, but the rest of the
-/// header block is still drained (see [`drain_headers`]) so the whole request
+/// header block is still drained (see `drain_headers`) so the whole request
 /// is consumed before we reply and close the connection.
 pub async fn parse_header(stream: &mut TcpStream, header_timeout: Duration) -> Option<String> {
     let mut reader = BufReader::new(stream);

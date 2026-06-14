@@ -2,6 +2,8 @@
 name = "web-server"
 version = "0.1.0"
 edition = "2021"
+description = "A tiny async (tokio) server that serves a fixed whitelist of static web files."
+repository = "https://github.com/jancusra/web-file-server"
 
 [dependencies]
 tokio = { version = "1.52.3", default-features = false, features = ["macros", "rt-multi-thread", "net", "io-util", "fs", "time", "sync", "signal"] }
