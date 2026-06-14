@@ -8,18 +8,21 @@ use tokio::{
     net::TcpStream,
 };
 
-/// Create a response file with a header and write the result to the stream
-pub async fn serve_file(
+/// Write a 200 response with the given body to the stream.
+///
+/// The body is read by the caller first, so a missing file never reaches this
+/// function: any error here means a partial response is already on the wire and
+/// the connection should simply be dropped (no fallback 404).
+pub async fn write_response(
     stream: &mut TcpStream,
-    file_path: &str,
     content_type: &str,
+    body: &[u8],
     cache: bool,
 ) -> Result<()> {
-    let content = get_file_as_byte_vec(file_path).await?;
-    let header = get_response_header(content_type, content.len(), cache);
+    let header = get_response_header(content_type, body.len(), cache);
 
     let mut response = header.into_bytes();
-    response.extend(content);
+    response.extend_from_slice(body);
 
     stream.write_all(&response).await?;
     stream.flush().await?;
@@ -31,7 +34,7 @@ pub async fn serve_file(
 pub async fn serve_not_found(stream: &mut TcpStream) {
     let body = b"404 Not Found";
     let header = format!(
-        "HTTP/1.1 404 Not Found\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Length: {}\r\n\r\n",
+        "HTTP/1.1 404 Not Found\r\nConnection: close\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Length: {}\r\n\r\n",
         body.len()
     );
 
@@ -43,15 +46,18 @@ pub async fn serve_not_found(stream: &mut TcpStream) {
     }
 }
 
-/// Prepare a response header with OK status
+/// Prepare a response header with OK status.
+///
+/// Every connection serves a single response and is then closed, so we always
+/// advertise `Connection: close` rather than (incorrectly) implying keep-alive.
 pub fn get_response_header(content_type: &str, content_length: usize, cache: bool) -> String {
-    let mut cache_str = "".to_string();
+    let cache_str = if cache {
+        ""
+    } else {
+        "Cache-Control: no-store\r\n"
+    };
 
-    if !cache {
-        cache_str = "Cache-Control: no-store\r\n".to_string();
-    }
-
-    format!("HTTP/1.1 200 OK\r\n{cache_str}Content-Type: {content_type}\r\nContent-Length: {content_length}\r\n\r\n")
+    format!("HTTP/1.1 200 OK\r\nConnection: close\r\n{cache_str}Content-Type: {content_type}\r\nContent-Length: {content_length}\r\n\r\n")
 }
 
 /// Convert a specific file to a vector of bytes
