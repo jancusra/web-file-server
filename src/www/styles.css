@@ -35,7 +35,16 @@ h1,
 }
 
 .animate-icon {
-    transition: 10s;
+    transition: transform 10s;
+}
+
+/* Load-time transforms applied from script.js */
+.rotated {
+    transform: rotate(1800deg);
+}
+
+.scaled {
+    transform: scale(2);
 }
 
 /* custom font icons */

@@ -36,3 +36,7 @@ SERVER_ADDR=0.0.0.0:8080 WEB_ROOT=./public cargo run
 ```sh
 cargo test
 ```
+
+This runs both the unit tests (request parsing, MIME lookup, response headers)
+and the integration tests, which start the server on an ephemeral port and drive
+real TCP requests against it.

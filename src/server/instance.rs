@@ -18,7 +18,7 @@ impl Server {
         }
     }
 
-    // Starting a server instance
+    // Bind to the given address and start serving requests
     pub async fn run(&self, address_port: &str) {
         let listener = match TcpListener::bind(address_port).await {
             Ok(listener) => listener,
@@ -30,11 +30,18 @@ impl Server {
 
         println!("Server is running on http://{}", address_port);
 
+        self.serve(listener).await;
+    }
+
+    /// Accept connections on an already-bound listener, handling each one
+    /// concurrently so a slow client can't block the others.
+    ///
+    /// Split out from [`Server::run`] so tests can bind to an ephemeral port
+    /// (`127.0.0.1:0`) and drive a real connection against the server.
+    pub async fn serve(&self, listener: TcpListener) {
         loop {
             match listener.accept().await {
                 Ok((stream, _addr)) => {
-                    // Handle each connection concurrently so a slow client
-                    // can't block the others.
                     let config = Arc::clone(&self.config);
                     tokio::spawn(async move {
                         Self::handle_request(stream, config).await;

@@ -1,9 +1,11 @@
-var earth = document.getElementById("icon-earth");
-earth.style.transform = "rotate(1800deg)";
+// Apply the one-off load-time transforms via classes (animated by .animate-icon)
+const earth = document.getElementById("icon-earth");
+earth.classList.add("rotated");
 
-var poison = document.getElementById("icon-poison");
-poison.style.transform = "scale(2)";
+const poison = document.getElementById("icon-poison");
+poison.classList.add("scaled");
 
-document.getElementById("icon-bus").addEventListener("click", function (e) {
-    e.target.classList.toggle("dark-color");
-}, false);
+// Toggle a darker colour on the bus icon when clicked
+document.getElementById("icon-bus").addEventListener("click", function (event) {
+    event.target.classList.toggle("dark-color");
+});
