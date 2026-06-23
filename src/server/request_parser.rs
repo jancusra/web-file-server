@@ -1,4 +1,4 @@
-//! Request parser: methods to parse received string request
+//! Request parser: methods to parse the incoming request
 
 use std::time::Duration;
 

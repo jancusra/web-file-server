@@ -144,7 +144,7 @@ impl ServerConfig {
         Some(path.split('?').next().unwrap_or(path))
     }
 
-    /// Get extension by full file name
+    /// Get the file extension from a full file name
     fn get_extension_from_filename(filename: &str) -> Option<&str> {
         Path::new(filename).extension().and_then(OsStr::to_str)
     }

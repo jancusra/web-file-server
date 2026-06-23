@@ -1,4 +1,4 @@
-//! Server module: basic module for server startup and request handling
+//! Server module: server startup and request handling
 
 pub mod configuration;
 pub mod instance;

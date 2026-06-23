@@ -1,4 +1,4 @@
-//! Server: define basic methods to start the server and process requests
+//! Server: methods to start the server and process requests
 
 use std::io::Result;
 use std::sync::Arc;
@@ -87,7 +87,7 @@ impl Server {
         }
     }
 
-    /// Processing a specific request as a stream
+    /// Handle a single request on the given stream.
     async fn handle_request(mut stream: TcpStream, config: Arc<ServerConfig>) {
         let request_header =
             match request_parser::parse_header(&mut stream, config.header_timeout).await {
